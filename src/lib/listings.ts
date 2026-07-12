@@ -7,6 +7,12 @@ import type {
 
 const DEFAULT_PER_PAGE = 24;
 
+// When env vars are still placeholders (pre-Supabase setup), skip all DB
+// calls so the site renders in an empty state instead of 500ing.
+const SUPABASE_CONFIGURED =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder");
+
 // Lazily resolve the server Supabase client so this module stays client-safe:
 // components that only import the re-exported label constants (e.g. filter-sidebar)
 // must not pull `next/headers` into a client bundle.
@@ -23,6 +29,9 @@ async function getSupabase() {
 export async function queryListings(
   filters: ListingFilters = {},
 ): Promise<{ listings: Listing[]; total: number }> {
+  if (!SUPABASE_CONFIGURED) {
+    return { listings: [], total: 0 };
+  }
   const supabase = await getSupabase();
   const page = Math.max(1, filters.page ?? 1);
   const perPage = Math.min(100, filters.per_page ?? DEFAULT_PER_PAGE);
@@ -102,6 +111,9 @@ export async function queryListings(
 
 /** Lightweight pin payload for the map (lat/lng + id + price). */
 export async function queryListingPins(filters: ListingFilters = {}) {
+  if (!SUPABASE_CONFIGURED) {
+    return [];
+  }
   const supabase = await getSupabase();
   let query = supabase
     .from("listings")
@@ -144,6 +156,7 @@ export async function queryListingPins(filters: ListingFilters = {}) {
 }
 
 export async function getListingById(id: string): Promise<Listing | null> {
+  if (!SUPABASE_CONFIGURED) return null;
   const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("listings")
