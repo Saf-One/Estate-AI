@@ -3,7 +3,7 @@ import { queryListings, queryListingPins } from "@/lib/listings";
 import { parseFilters, filtersToQuery } from "@/lib/filters";
 import ListingCard from "@/components/listing-card";
 import FilterSidebar from "@/components/filter-sidebar";
-import ListingsMap from "@/components/listings-map";
+import ListingsMap from "@/components/map-loader";
 import SortSelect from "@/components/sort-select";
 
 const PER_PAGE = 24;
