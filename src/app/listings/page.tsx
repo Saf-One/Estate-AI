@@ -4,7 +4,7 @@ import { parseFilters, filtersToQuery } from "@/lib/filters";
 import ListingCard from "@/components/listing-card";
 import FilterSidebar from "@/components/filter-sidebar";
 import ListingsMap from "@/components/listings-map";
-import { Select } from "@/components/ui";
+import SortSelect from "@/components/sort-select";
 
 const PER_PAGE = 24;
 
@@ -73,18 +73,12 @@ export default async function ListingsPage({
                   )}`}{" "}
               of {total.toLocaleString()}
             </p>
-            <Select
-              className="w-44"
-              defaultValue={filters.sort ?? "newest"}
-              onChange={e => {
-                window.location.href = sortQuery(e.target.value);
-              }}
-            >
-              <option value="newest">Newest</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="rating">Top Rated</option>
-            </Select>
+            <SortSelect
+            value={filters.sort ?? "newest"}
+            onChange={(v) => {
+              window.location.href = sortQuery(v);
+            }}
+          />
           </div>
 
           {/* Grid */}
