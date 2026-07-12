@@ -1,21 +1,29 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui";
 
 export default function SortSelect({
   value,
-  onChange,
-  className,
+  baseQuery,
 }: {
   value: string;
-  onChange: (value: string) => void;
-  className?: string;
+  baseQuery: string;
 }) {
+  const router = useRouter();
+
   return (
     <Select
-      className={className}
+      className="w-44"
       defaultValue={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        const sort = e.target.value;
+        const params = new URLSearchParams(baseQuery);
+        if (sort !== "newest") params.set("sort", sort);
+        else params.delete("sort");
+        params.delete("page");
+        router.push(`/listings?${params.toString()}`);
+      }}
     >
       <option value="newest">Newest</option>
       <option value="price_asc">Price: Low to High</option>

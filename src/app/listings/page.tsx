@@ -24,12 +24,8 @@ export default async function ListingsPage({
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
   const currentPage = filters.page ?? 1;
 
-  const sortQuery = (sort: string) => {
-    const base = new URLSearchParams(filtersToQuery({ ...filters, page: 1 }));
-    if (sort !== "newest") base.set("sort", sort);
-    else base.delete("sort");
-    return `/listings?${base.toString()}`;
-  };
+  // Plain query string (no functions) passed to the client SortSelect.
+  const baseQuery = filtersToQuery({ ...filters, page: 1 }).toString();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -74,11 +70,9 @@ export default async function ListingsPage({
               of {total.toLocaleString()}
             </p>
             <SortSelect
-            value={filters.sort ?? "newest"}
-            onChange={(v) => {
-              window.location.href = sortQuery(v);
-            }}
-          />
+              value={filters.sort ?? "newest"}
+              baseQuery={baseQuery}
+            />
           </div>
 
           {/* Grid */}
