@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Estate AI - Real Estate Listings Platform
 
-## Getting Started
+A full-featured property listings web app built with Next.js 16 (App Router), Supabase (Postgres + Auth), Leaflet maps, and Resend email. Browsable listings with advanced filters, an interactive price map, property detail pages with reviews and inquiries, user accounts with saved listings, and a full admin dashboard.
 
-First, run the development server:
+This README is for the **client** who will run, configure, and deploy the project.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Next.js 16 (App Router, TypeScript)
+- Supabase (Postgres database, Auth, Row Level Security)
+- Leaflet (interactive maps, no API key needed)
+- Resend (transactional email for inquiries)
+- Vercel (recommended hosting)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 20.18+ and npm
+- A free [Supabase](https://supabase.com) account
+- A free [Resend](https://resend.com) account (only needed for inquiry emails)
+- A GitHub account and (optionally) a [Vercel](https://vercel.com) account
 
-## Learn More
+## Local Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   git clone <your-repo-url>
+   cd estate-ai
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Create your environment file by copying the example:
 
-## Deploy on Vercel
+   ```bash
+   cp .env.example .env.local
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Fill in the values in `.env.local` (see Environment Variables below).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Start the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open http://localhost:3000.
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and set:
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server only, never expose) |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Public site URL (e.g. http://localhost:3000 or your production domain) |
+| `RESEND_API_KEY` | No | Resend API key for inquiry notification emails |
+| `INQUIRY_TO_EMAIL` | No | Destination email for inquiry notifications |
+
+The app runs with placeholder values but will show no listings until Supabase is connected.
+
+## Supabase Setup
+
+1. Create a new Supabase project.
+2. In the Supabase SQL editor, run the contents of `supabase/schema.sql`. This creates the tables (`profiles`, `listings`, `reviews`, `bookmarks`, `saved_searches`, `inquiries`, `agents`), row level security policies, rating recalculation triggers, and a storage bucket for listing images.
+3. Copy your project URL and keys from Project Settings > API into `.env.local`.
+4. (Optional) Seed sample data:
+
+   ```bash
+   npm run seed
+   ```
+
+   This inserts 10,000 sample listings for testing filters and the map.
+
+## Admin Access
+
+The admin dashboard lives at `/admin`. To grant a user admin rights, set their `role` to `admin` in the `profiles` table (the schema defaults new users to `user`). Admins can manage listings, agents, users, view analytics, and bulk-import listings via CSV.
+
+## Deploying to Vercel
+
+1. Push this repo to GitHub.
+2. In Vercel, import the repository.
+3. Set the same environment variables from `.env.example` in the Vercel project settings.
+4. Deploy. The build command (`npm run build`) and output are handled automatically.
+
+A live production build is already running at https://ai-real-estate-listings.vercel.app.
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run start` | Run the production build |
+| `npm run lint` | Lint the codebase |
+| `npm run seed` | Insert 10k sample listings into Supabase |
+
+## Project Structure
+
+- `src/app` - Pages and API routes (home, listings, detail, auth, admin, account)
+- `src/components` - Reusable UI (cards, filters, map, forms, admin)
+- `src/lib` - Supabase clients, query builders, filters, types
+- `supabase/schema.sql` - Database schema and security policies
+- `scripts/seed.ts` - Sample data generator
+
+## Support
+
+For setup help, see `HANDOFF.md` (developer handover notes) in the repo, or contact the developer.
